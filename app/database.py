@@ -1,70 +1,122 @@
+"""
+Interface for sqlite3 database.
+Jake Pittis 2014
+"""
+
 import sqlite3
 
-def init(daylyBudget, weeklyBudget, monthlyBudget):
-	createBudgetTable()
-	createTransactionTable()
-	db = sqlite3.connect("budget101.db")
-	c = db.cursor()
-	c.execute('''INSERT INTO budget(day, week, month) VALUES(?, ?, ?)''',
-		(daylyBudget, weeklyBudget, monthlyBudget))
-	db.commit()
+"""
+Uses two tables, budgets and deltas.
 
-def createBudgetTable():
-	db = sqlite3.connect("budget101.db")
+budgets table
+name text | day real | week real | month real
+
+deltas table
+id integer | budgetName text | date text | delta real
+"""
+
+def create_tables(filename):
+	"""Creates budgets and deltas tables if they do not already exist.
+
+	Where filename is the database file name.
+	"""
+	db = sqlite3.connect(filename)
 	c = db.cursor()
-	c.execute('''DROP TABLE IF EXISTS budget''')
-	c.execute('''CREATE TABLE IF NOT EXISTS budget (
-        id INTEGER PRIMARY KEY NOT NULL,
-        day REAL NOT NULL,
-        week REAL NOT NULL,
-        month REAL NOT NULL
+
+	c.execute('''CREATE TABLE IF NOT EXISTS budgets (
+        name TEXT PRIMARY KEY,
+        day REAL,
+        week REAL,
+        month REAL
         )''')
-	db.commit()
 
-def createTransactionTable():
-	db = sqlite3.connect("budget101.db")
-	c = db.cursor()
-	c.execute('''DROP TABLE IF EXISTS deltas''')
 	c.execute('''CREATE TABLE IF NOT EXISTS deltas (
-        id INTEGER PRIMARY KEY NOT NULL,
-        date TEXT NOT NULL,
-        delta REAL NOT NULL
+        id INTEGER AUTOINCREMENT PRIMARY KEY,
+        budgetName TEXT,
+        date TEXT,
+        delta REAL,
+        FOREIGN KEY(budgetName) REFERENCES budgets(name)
         )''')
+
 	db.commit()
 
-def monthBudget():
-	db = sqlite3.connect("budget101.db")
-	c = db.cursor()
-	c.execute('''SELECT month FROM budget''')
-	return c.fetchone()[0]
+def drop_tables(filename):
+	"""Removes budgets and deltas tables.
 
-def weekBudget():
-	db = sqlite3.connect("budget101.db")
+	Where filename is the database file name.
+	"""
+	db = sqlite3.connect(filename)
 	c = db.cursor()
-	c.execute('''SELECT week FROM budget''')
-	return c.fetchone()[0]
 
-def dayBudget():
-	db = sqlite3.connect("budget101.db")
-	c = db.cursor()
-	c.execute('''SELECT day FROM budget''')
-	return c.fetchone()[0]
+	c.execute('''DROP TABLE IF EXISTS budgets;
+		DROP TABLE IF EXISTS deltas;
+		''')
 
-def transactionDelta(dates):
-	delta = 0
-	db = sqlite3.connect("budget101.db")
+	db.commit()
+
+def get_budget(name, filename):
+	"""Returns the dayly, weekly and monthly budget.
+
+	Where name is a primary key and filename is the database file name.
+	"""
+	db = sqlite3.connect(filename)
 	c = db.cursor()
+
+	c.execute('''SELECT day, week, month FROM budgets WHERE name=?'''),
+	(name,)
+
+	return c.fetchall()
+
+def get_total_delta(dates, name, filename):
+	"""Returns the the sum of deltas from the dates provided.
+
+	Where dates is a list of date objects.
+	Where name is the budget name primary key.
+	Where filename is the database file name.
+	"""
+	total_delta = 0
+
+	db = sqlite3.connect(filename)
+	c = db.cursor()
+
 	for d in dates:
-		c.execute('''SELECT delta FROM deltas WHERE date=?''', (d,))
+		c.execute('''SELECT delta FROM deltas WHERE date=? AND budgetName=?''',
+			(d, name))
 		detlas = c.fetchall()
 		for d in detlas:
-			delta = delta + d[0]
-	return delta
+			total_delta = total_delta + d[0]
 
-def insertTransaction(delta, date):
-	db = sqlite3.connect("budget101.db")
+	return total_delta
+
+def insert_budget(name, day, week, month, filename):
+	"""Insert budget into budgets table.
+
+	Where name is a primary key.
+	Where day, week and month are floats.
+	Where filename is the database filename.
+	"""
+	db = sqlite3.connect(filename)
 	c = db.cursor()
-	c.execute('''INSERT INTO deltas(date, delta) VALUES(?, ?)''', (date, delta))
+
+	c.execute('''INSERT INTO budgets(name, day, week, month) VALUES(?, ?, ?, ?)''',
+		(name, day, week, month))
+
+	db.commit()
+
+def insert_delta(name, date, delta, filename):
+	"""Inserts a delta into deltas table.
+
+	Where name is the budget primary key.
+	Where date is a date object.
+	Where delta is a float.
+	Where filename is the database file name.
+	"""
+	db = sqlite3.connect(filename)
+	c = db.cursor()
+
+	c.execute('''INSERT INTO deltas(budgetName, date, delta) VALUES(?, ?, ?)''',
+		(name, date, delta))
+
 	db.commit()
 
 if __name__ == "__main__":
