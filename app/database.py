@@ -3,7 +3,7 @@ Interface for sqlite3 database.
 Jake Pittis 2014
 """
 
-import sqlite3
+import sqlite3, dates
 
 """
 Uses two tables, budgets and deltas.
@@ -96,6 +96,9 @@ def insert_budget(name, day, week, month, filename):
 	"""
 	db = sqlite3.connect(filename)
 	c = db.cursor()
+
+	week = week + (7 * day)
+	month = month + (week * dates.num_weeks_in_month(dates.date_today()))
 
 	c.execute('''INSERT INTO budgets(name, day, week, month) VALUES(?, ?, ?, ?)''',
 		(name, day, week, month))

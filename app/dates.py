@@ -21,7 +21,7 @@ def dates_in_week(date):
 	weeks = calendar.Calendar(0).monthdatescalendar(date.year, date.month)
 	for week in weeks:
 		for d in week:
-			if d == today:
+			if d == date_today():
 				return week
 
 def dates_in_month(date):
@@ -44,7 +44,7 @@ def num_days_in_month(date):
 	dates = calendar.Calendar(0).itermonthdates(date.year, date.month)
 	numDays = 0
 	for d in dates:
-		if d.month == today.month:
+		if d.month == date_today().month:
 			numDays = numDays + 1
 	return numDays
 
