@@ -31,7 +31,7 @@ def create_tables(filename):
         )''')
 
 	c.execute('''CREATE TABLE IF NOT EXISTS deltas (
-        id INTEGER AUTOINCREMENT PRIMARY KEY,
+        id INTEGER PRIMARY KEY,
         budgetName TEXT,
         date TEXT,
         delta REAL,
@@ -48,9 +48,8 @@ def drop_tables(filename):
 	db = sqlite3.connect(filename)
 	c = db.cursor()
 
-	c.execute('''DROP TABLE IF EXISTS budgets;
-		DROP TABLE IF EXISTS deltas;
-		''')
+	c.execute('''DROP TABLE IF EXISTS budgets''')
+	c.execute('''DROP TABLE IF EXISTS deltas''')
 
 	db.commit()
 
@@ -62,12 +61,12 @@ def get_budget(name, filename):
 	db = sqlite3.connect(filename)
 	c = db.cursor()
 
-	c.execute('''SELECT day, week, month FROM budgets WHERE name=?'''),
-	(name,)
+	c.execute('''SELECT day, week, month FROM budgets WHERE name=?''',
+	(name,))
 
-	return c.fetchall()
+	return c.fetchall()[0]
 
-def get_total_delta(dates, name, filename):
+def get_total_delta(name, dates, filename):
 	"""Returns the the sum of deltas from the dates provided.
 
 	Where dates is a list of date objects.
@@ -118,6 +117,3 @@ def insert_delta(name, date, delta, filename):
 		(name, date, delta))
 
 	db.commit()
-
-if __name__ == "__main__":
-	init(10.00, 20.00, 60.00)
