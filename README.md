@@ -1,4 +1,3 @@
-Photo24
+Title
 =======
-
-Daily picture sharing.
+Flask Template!

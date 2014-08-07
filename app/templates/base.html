@@ -4,42 +4,57 @@
 <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.css') }}" type="text/css">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ title }} - Photo24</title>
+    <title>Budget</title>
 </head>
 
 <style>body{ padding-bottom: 70px; }</style>
 
-<div class="container">
-
-<nav class="navbar navbar-default navbar-static-top" role="navigation">
+<body>
     <div class="container">
-        <ul class="nav navbar-nav">
-            <a class="navbar-brand" href="{{ url_for('browse')}}">Photo24</a>
-            <li><a href="{{ url_for('user')}}">User</a></li>
-            <li><a href="{{ url_for('login')}}">Login</a></li>
-            <li><a href="{{ url_for('register')}}">Register</a></li>
-        </ul>
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Day</h2>
+                <p>Todays date is {{ today }}</p>
+                <h3><span class="label label-default">Delta</span> {{ -delta[0] }}</h3>
+                <h3><span class="label label-default">Funds</span> {{ budget[0] - delta[0] }}</h3>
+                <h3><span class="label label-default">Budget</span> {{ budget[0] }}</h3>
+            </div>
+            <div class="col-md-4">
+                <h2>Week</h2>
+                <p>Day {{ daysLeftWeek }} of 7</p>
+                <h3><span class="label label-default">Delta</span> {{ -delta[1] }}</h3>
+                <h3><span class="label label-default">Funds</span> {{ budget[1] - delta[1] }}</h3>
+                <h3><span class="label label-default">Budget</span> {{ budget[1] }}</h3>
+            </div>
+            <div class="col-md-4">
+                <h2>Month</h2>
+                <p>Day {{ daysLeftMonth }} of {{ daysInMonth }}</p>
+                <h3><span class="label label-default">Delta</span> {{ -delta[2] }}</h3>
+                <h3><span class="label label-default">Funds</span> {{ budget[2] + delta[2] }}</h3>
+                <h3><span class="label label-default">Budget</span> {{ budget[2] }}</h3>
+            </div>
+        </div>
+        <form method = post action="/">
+            <br>
+            <br>
+            {{ form.withdraw.label }} {{ form.withdraw(size=10) }}
+            <br>
+            <br>
+            {{ form.deposit.label }} {{ form.deposit(size=10) }}
+            <br>
+            <br>
+            <input type="submit" class="btn btn-primary" value="Go" style="text-align: center">
+
+            <div class="navbar navbar-fixed-bottom">
+                <div class="container">
+                    <p class="text-center">
+                        &copy; 2014 Jake Pittis
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-
-<div class="container">
-{% block body %}{% endblock %}
-</div>
-
-<div class="navbar navbar-fixed-bottom">
-    <div class="container">
-        <p class="text-center">
-            <a href="{{ url_for('browse')}}">Browse</a>
-            <a href="{{ url_for('user')}}">User</a>
-            <a href="{{ url_for('login')}}">Login</a>
-            <a href="{{ url_for('register')}}">Register</a>
-            &copy; 2014 Jake Pittis
-        </p>
-    </div>
-</div>
-
-</div>
-
-<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-<script src="{{ url_for('static', filename='bootstrap/js/bootstrap.js') }}"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.js') }}"></script>
+</body>
 </html>
