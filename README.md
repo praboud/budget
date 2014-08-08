@@ -1,3 +1,3 @@
-Title
+Budget
 =======
-Flask Template!
+Server side budgeting application.
