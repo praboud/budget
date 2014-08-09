@@ -15,6 +15,13 @@ deltas table
 id integer | budgetName text | date text | delta real
 """
 
+# as you noted in your email, this is a bit basic, although it's quite sufficient
+# for where the application is right now
+# if you want to expand this, you may want to look into an ORM to abstract out
+# database interactions
+# I've only used the Django ORM, but it sounds like SQLAlchemy is another popular ORM
+# for python
+
 def create_tables(filename):
 	"""Creates budgets and deltas tables if they do not already exist.
 
@@ -30,6 +37,10 @@ def create_tables(filename):
         month REAL
         )''')
 
+        # I was about to comment about using an SQL date datatype in this
+        # table, but apparently sqlite doesn't have one...
+        # that's pretty bush-league...
+        # to be fair, sqlite is not really meant for any serious work
 	c.execute('''CREATE TABLE IF NOT EXISTS deltas (
         id INTEGER PRIMARY KEY,
         budgetName TEXT,
@@ -60,6 +71,9 @@ def get_budget(name, filename):
 	"""
 	db = sqlite3.connect(filename)
 	c = db.cursor()
+
+        # nice! all of this is SQL injection proof
+        # I was almost disapointed ;)
 
 	c.execute('''SELECT day, week, month FROM budgets WHERE name=?''',
 	(name,))

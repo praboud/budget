@@ -13,6 +13,8 @@ def format(amount):
 	locale.setlocale(locale.LC_ALL, "")
 	return locale.currency(amount, grouping=True)
 
+# this is probably something which the template should handle
+# generally, you want to not have controller logic mixed with presentation
 def format_triple(t):
 	"""Returns a formated tuple in currency form.
 

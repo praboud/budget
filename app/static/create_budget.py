@@ -1,3 +1,4 @@
+# what is this doing here?
 import sqlite3
 
 db = sqlite3.connect('budget.db')
